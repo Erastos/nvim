@@ -27,6 +27,7 @@ return {
 			ensure_installed = {
 				"lua_ls",
 				"ansiblels",
+				"terraformls",
 			},
 		})
 
@@ -37,6 +38,7 @@ return {
 				"isort", -- python formatter
 				"black", -- python formatter
 				"ansible-lint",
+				"tflint",
 			},
 		})
 	end,
