@@ -29,6 +29,8 @@ return {
 				"ansiblels",
 				"terraformls",
 				"pyright",
+				"yamlls",
+				"gopls",
 			},
 		})
 
