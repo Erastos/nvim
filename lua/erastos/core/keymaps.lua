@@ -22,4 +22,4 @@ keymap.set("n", "<leader>tC", "<CMD>tabonly<CR>", { desc = "Close other tabs bes
 -- buffers
 keymap.set("n", "<leader>bn", "<CMD>bn<CR>", { desc = "Next Buffer" })
 keymap.set("n", "<leader>bp", "<CMD>bp<CR>", { desc = "Prev Buffer" })
-keymap.set("n", "<leader>be", "<CMD>bufdo e<CR>", { desc = "Prev Buffer" })
+keymap.set("n", "<leader>be", "<CMD>bufdo e<CR>", { desc = "Reload all Buffers" })
