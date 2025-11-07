@@ -34,6 +34,10 @@ return {
 				"terraform",
 				"go",
 				"python",
+        "javascript",
+        "helm",
+        "jinja",
+        "nix",
 			},
 			incremental_selection = {
 				enable = true,
