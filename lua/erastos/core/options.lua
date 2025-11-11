@@ -29,6 +29,9 @@ opt.splitbelow = true
 
 opt.wildmenu = true
 
+-- Global Variable that determines which theme to load at startup
+selected_theme = os.getenv("NVIM_THEME") or "tokyonight"
+
 -- Filetypes
 vim.filetype.add({
 	extension = {

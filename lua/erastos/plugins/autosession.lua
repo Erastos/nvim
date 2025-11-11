@@ -1,6 +1,9 @@
 return {
   "rmagatti/auto-session",
   config = function()
+    -- Set sessionoptions to include localoptions for proper filetype and highlighting restoration
+    vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+
     local auto_session = require("auto-session")
     auto_session.setup({
       auto_restore_enabled = false,
