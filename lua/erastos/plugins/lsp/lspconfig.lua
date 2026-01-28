@@ -8,6 +8,7 @@ return {
 	},
 	config = function()
 		-- import lspconfig plugin
+		local lspconfig = require("lspconfig")
 
 		-- import mason_lspconfig plugin
 		local mason_lspconfig = require("mason-lspconfig")
@@ -110,6 +111,49 @@ return {
 			},
 		}
 
-		mason_lspconfig.setup({})
+		-- Detect if running on NixOS
+		local is_nixos = vim.fn.filereadable("/etc/NIXOS") == 1
+
+		if is_nixos then
+			-- On NixOS, directly configure LSP servers from Nix packages
+			local servers = {
+				"lua_ls",
+				"pyright",
+				"gopls",
+				"yamlls",
+				"rust_analyzer",
+			}
+
+			for _, server in ipairs(servers) do
+				if server == "lua_ls" and vim.lsp.config.lua_ls then
+					lspconfig.lua_ls.setup(vim.lsp.config.lua_ls)
+				elseif server == "yamlls" and vim.lsp.config.yamlls then
+					lspconfig.yamlls.setup(vim.lsp.config.yamlls)
+				else
+					lspconfig[server].setup({
+						capabilities = capabilities,
+					})
+				end
+			end
+		else
+			-- On non-NixOS, use mason-lspconfig handlers
+			mason_lspconfig.setup({
+				handlers = {
+					-- Default handler for all servers
+					function(server_name)
+						lspconfig[server_name].setup({
+							capabilities = capabilities,
+						})
+					end,
+					-- Keep custom configurations for specific servers
+					["yamlls"] = function()
+						lspconfig.yamlls.setup(vim.lsp.config.yamlls)
+					end,
+					["lua_ls"] = function()
+						lspconfig.lua_ls.setup(vim.lsp.config.lua_ls)
+					end,
+				},
+			})
+		end
 	end,
 }
