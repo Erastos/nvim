@@ -1,25 +1,41 @@
-vim.g.mapleader = " "
+local map = vim.keymap.set
 
-local keymap = vim.keymap
+-- Clear search highlight
+map("n", "<Esc>", "<cmd>nohlsearch<CR>")
+map("n", "<leader>nh", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight" })
 
--- no highlight
-keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
+-- Window management (navigation handled by vim-tmux-navigator)
+map("n", "<leader>wv", "<C-w>v", { desc = "Split vertical" })
+map("n", "<leader>wh", "<C-w>s", { desc = "Split horizontal" })
+map("n", "<leader>we", "<C-w>=", { desc = "Equal splits" })
+map("n", "<leader>wc", "<cmd>close<CR>", { desc = "Close split" })
 
--- window management
-keymap.set("n", "<leader>wv", "<C-w>v", { desc = "Split vertically" })
-keymap.set("n", "<leader>wh", "<C-w>s", { desc = "Split horiztonally" })
-keymap.set("n", "<leader>we", "<C-w>=", { desc = "Make splits Equal" })
-keymap.set("n", "<leader>wc", "<CMD>close<CR>", { desc = "Close split" })
+-- Tab management
+map("n", "<leader>to", "<cmd>tabnew<CR>", { desc = "New tab" })
+map("n", "<leader>tc", "<cmd>tabclose<CR>", { desc = "Close tab" })
+map("n", "<leader>tn", "<cmd>tabnext<CR>", { desc = "Next tab" })
+map("n", "<leader>tp", "<cmd>tabprevious<CR>", { desc = "Prev tab" })
+map("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Current buffer in new tab" })
 
--- tabs
-keymap.set("n", "<leader>to", "<CMD>tabnew<CR>", { desc = "Open new tab" })
-keymap.set("n", "<leader>tc", "<CMD>tabclose<CR>", { desc = "Close new tab" })
-keymap.set("n", "<leader>tn", "<CMD>tabn<CR>", { desc = "Go to next tab" })
-keymap.set("n", "<leader>tp", "<CMD>tabp<CR>", { desc = "Go to previous tab" })
-keymap.set("n", "<leader>tf", "<CMD>tabnew %<CR>", { desc = "Open current buffer in new tab" })
-keymap.set("n", "<leader>tC", "<CMD>tabonly<CR>", { desc = "Close other tabs besides current buffer" })
+-- Buffer navigation
+map("n", "<S-h>", "<cmd>bprevious<CR>", { desc = "Prev buffer" })
+map("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next buffer" })
 
--- buffers
-keymap.set("n", "<leader>bn", "<CMD>bn<CR>", { desc = "Next Buffer" })
-keymap.set("n", "<leader>bp", "<CMD>bp<CR>", { desc = "Prev Buffer" })
-keymap.set("n", "<leader>be", "<CMD>bufdo e<CR>", { desc = "Reload all Buffers" })
+-- Cursor centering when scrolling
+map("n", "<C-d>", "<C-d>zz")
+map("n", "<C-u>", "<C-u>zz")
+
+-- Cursor centering when moving through search results
+map("n", "n", "nzz")
+map("n", "N", "Nzz")
+
+-- Visual: move selected lines up/down and re-indent
+map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+map("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+
+-- Visual: indent and stay in visual mode
+map("v", ">", ">gv")
+map("v", "<", "<gv")
+
+-- Visual: paste without overwriting the yank register
+map("x", "p", '"_dP')

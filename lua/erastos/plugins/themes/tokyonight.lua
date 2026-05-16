@@ -1,19 +1,13 @@
--- local selected_theme = os.getenv("NVIM_THEME") or "tokyonight"
+local theme = vim.g.nvim_theme or "tokyonight"
+local is_active = vim.startswith(theme, "tokyonight")
 
 return {
   "folke/tokyonight.nvim",
-  lazy = selected_theme ~= "tokyonight",
+  lazy = not is_active,
   priority = 1000,
-  opts = {
-    style = "storm", -- storm, moon, night, day
-    transparent = false,
-    styles = {
-      sidebars = "dark",
-      floats = "dark",
-    },
-  },
-  config = function(_, opts)
-    require("tokyonight").setup(opts)
-    vim.cmd([[colorscheme tokyonight]])
+  config = function()
+    local style = theme:match("tokyonight%-(.+)") or "storm"
+    require("tokyonight").setup({ style = style })
+    vim.cmd("colorscheme tokyonight-" .. style)
   end,
 }

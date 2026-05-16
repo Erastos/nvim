@@ -5,18 +5,17 @@ if not vim.uv.fs_stat(lazypath) then
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
+    "--branch=stable",
     lazypath,
   })
 end
-
 vim.opt.rtp:prepend(lazypath)
-require("lazy").setup({{import = "erastos.plugins"}, {import = "erastos.plugins.lsp"}, {import = "erastos.plugins.themes"}}, {
-  change_detection = {
-    notify = false,
-  },
-  checker = {
-      enabled = true,
-      notify = false,
-    },
+
+require("lazy").setup({
+  { import = "erastos.plugins" },
+  { import = "erastos.plugins.lsp" },
+  { import = "erastos.plugins.themes" },
+}, {
+  change_detection = { notify = false },
+  checker = { enabled = true, notify = false },
 })

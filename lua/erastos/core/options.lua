@@ -1,40 +1,45 @@
-vim.cmd("let g:netrw_liststyle = 3")
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
+vim.g.is_nixos = vim.fn.filereadable("/etc/NIXOS") == 1
+vim.g.nvim_theme = os.getenv("NVIM_THEME") or "tokyonight"
 
 local opt = vim.opt
 
-opt.relativenumber = true
+-- Line numbers
 opt.number = true
+opt.relativenumber = true
+opt.cursorline = true
 
+-- Indentation
 opt.tabstop = 2
 opt.shiftwidth = 2
 opt.expandtab = true
 opt.autoindent = true
 
-opt.wrap = false
-
+-- Search
 opt.ignorecase = true
 opt.smartcase = true
+opt.hlsearch = true
+opt.incsearch = true
 
-opt.cursorline = true
-
+-- UI
 opt.termguicolors = true
 opt.signcolumn = "yes"
+opt.wrap = false
+opt.scrolloff = 8
+opt.sidescrolloff = 8
+opt.wildmenu = true
 
-opt.backspace = "indent,eol,start"
-
-opt.clipboard:append("unnamedplus")
-
+-- Splits
 opt.splitright = true
 opt.splitbelow = true
 
-opt.wildmenu = true
+-- Editing
+opt.backspace = "indent,eol,start"
+opt.clipboard = "unnamedplus"
+opt.undofile = true
 
--- Global Variable that determines which theme to load at startup
-selected_theme = os.getenv("NVIM_THEME") or "tokyonight"
-
--- Filetypes
-vim.filetype.add({
-	extension = {
-		yml = "yaml.ansible",
-	},
-})
+-- Performance
+opt.updatetime = 250
+opt.timeoutlen = 300

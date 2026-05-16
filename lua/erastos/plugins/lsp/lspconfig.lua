@@ -2,157 +2,122 @@ return {
   "neovim/nvim-lspconfig",
   event = { "BufReadPre", "BufNewFile" },
   dependencies = {
-    "hrsh7th/cmp-nvim-lsp",
-    { "antosha417/nvim-lsp-file-operations", config = true },
-    { "folke/lazydev.nvim",                   ft = "lua", opts = {} },
+    "saghen/blink.cmp",
+    { "williamboman/mason-lspconfig.nvim", optional = true },
   },
   config = function()
-    -- import lspconfig plugin
-    local lspconfig = require("lspconfig")
+    -- Apply capabilities globally to all servers (blink.cmp extends defaults)
+    vim.lsp.config("*", {
+      capabilities = require("blink.cmp").get_lsp_capabilities(),
+    })
 
-    -- import mason_lspconfig plugin
-    local mason_lspconfig = require("mason-lspconfig")
+    -- Per-server settings (extend nvim-lspconfig base configs)
+    vim.lsp.config("gopls", {
+      settings = {
+        gopls = {
+          gofumpt = true,
+          usePlaceholders = true,
+          analyses = { unusedparams = true },
+          staticcheck = true,
+        },
+      },
+    })
 
-    -- import cmp-nvim-lsp plugin
-    local cmp_nvim_lsp = require("cmp_nvim_lsp")
+    vim.lsp.config("pyright", {
+      settings = {
+        pyright = { disableOrganizeImports = true },
+        python = {
+          analysis = {
+            autoSearchPaths = true,
+            diagnosticMode = "openFilesOnly",
+            useLibraryCodeForTypes = true,
+          },
+        },
+      },
+    })
 
-    local keymap = vim.keymap -- for conciseness
+    vim.lsp.config("ts_ls", {
+      settings = {
+        typescript = {
+          inlayHints = {
+            includeInlayParameterNameHints = "all",
+            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+          },
+        },
+      },
+    })
 
+    vim.lsp.config("yamlls", {
+      settings = {
+        yaml = {
+          keyOrdering = false,
+          schemaStore = {
+            enable = true,
+            url = "https://www.schemastore.org/api/json/catalog.json",
+          },
+          schemas = {
+            kubernetes = "*.yaml",
+            ["https://json.schemastore.org/github-workflow.json"] = ".github/workflows/*",
+            ["https://json.schemastore.org/prettierrc.json"] = ".prettierrc.{yml,yaml}",
+          },
+        },
+      },
+    })
+
+    -- On NixOS, mason-lspconfig won't run, so enable servers manually
+    if vim.g.is_nixos then
+      vim.lsp.enable({
+        "gopls",
+        "pyright",
+        "ts_ls",
+        "eslint",
+        "terraformls",
+        "ansiblels",
+        "yamlls",
+        "rust_analyzer",
+      })
+    end
+
+    -- LSP keymaps applied on each attach via autocmd (not on_attach)
     vim.api.nvim_create_autocmd("LspAttach", {
-      group = vim.api.nvim_create_augroup("UserLspConfig", {}),
       callback = function(ev)
-        -- Buffer local mappings.
-        -- See `:help vim.lsp.*` for documentation on any of the below functions
-        local opts = { buffer = ev.buf, silent = true }
+        local opts = { buffer = ev.buf }
+        local map = function(keys, fn, desc)
+          vim.keymap.set("n", keys, fn, vim.tbl_extend("force", opts, { desc = desc }))
+        end
 
-        -- set keybinds
-        opts.desc = "Show LSP references"
-        keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts) -- show definition, references
+        -- Note: K, gra, gri, grn, grr, grt are built-in defaults in Neovim 0.12
 
-        opts.desc = "Go to declaration"
-        keymap.set("n", "gD", vim.lsp.buf.declaration, opts) -- go to declaration
+        map("gd", vim.lsp.buf.definition, "Go to definition")
+        map("gD", vim.lsp.buf.declaration, "Go to declaration")
+        map("gt", vim.lsp.buf.type_definition, "Go to type definition")
 
-        opts.desc = "Show LSP definitions"
-        keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts) -- show lsp definitions
+        map("<leader>ld", vim.diagnostic.open_float, "Line diagnostics")
+        map("<leader>lR", "<cmd>LspRestart<CR>", "Restart LSP")
 
-        opts.desc = "Show LSP implementations"
-        keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts) -- show lsp implementations
-
-        opts.desc = "Show LSP type definitions"
-        keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
-
-        opts.desc = "See available code actions"
-        keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts) -- see available code actions, in visual mode will apply to selection
-
-        opts.desc = "Smart rename"
-        keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts) -- smart rename
-
-        opts.desc = "Show buffer diagnostics"
-        keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts) -- show  diagnostics for file
-
-        opts.desc = "Show line diagnostics"
-        keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts) -- show diagnostics for line
-
-        opts.desc = "Go to previous diagnostic"
-        keymap.set("n", "[d", vim.diagnostic.goto_prev, opts) -- jump to previous diagnostic in buffer
-
-        opts.desc = "Go to next diagnostic"
-        keymap.set("n", "]d", vim.diagnostic.goto_next, opts) -- jump to next diagnostic in buffer
-
-        opts.desc = "Show documentation for what is under cursor"
-        keymap.set("n", "K", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
-
-        opts.desc = "Restart LSP"
-        keymap.set("n", "<leader>rs", ":lsp restart<CR>", opts) -- mapping to restart lsp if necessary
+        -- vim.diagnostic.jump replaces deprecated goto_prev/goto_next
+        map("[d", function() vim.diagnostic.jump({ count = -1 }) end, "Prev diagnostic")
+        map("]d", function() vim.diagnostic.jump({ count = 1 }) end, "Next diagnostic")
+        map("[e", function() vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR }) end, "Prev error")
+        map("]e", function() vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR }) end, "Next error")
       end,
     })
 
-    -- used to enable autocompletion (assign to every lsp server config)
-    local capabilities = cmp_nvim_lsp.default_capabilities()
-
-    -- Change the Diagnostic symbols in the sign column (gutter)
+    -- Diagnostic display
     vim.diagnostic.config({
-      signs = {
-        text = {
-          [vim.diagnostic.severity.ERROR] = " ",
-          [vim.diagnostic.severity.WARN]  = " ",
-          [vim.diagnostic.severity.HINT]  = "󰠠 ",
-          [vim.diagnostic.severity.INFO]  = " ",
-        },
+      virtual_text = { prefix = "●" },
+      signs = true,
+      underline = true,
+      update_in_insert = false,
+      severity_sort = true,
+      float = {
+        border = "rounded",
+        source = true,
       },
     })
-
-    -- Set default capabilities for all LSP servers
-    vim.lsp.config('*', { capabilities = capabilities })
-
-    vim.lsp.config['yamlls'] = {
-      capabilities = capabilities,
-      settings = {
-        yaml = {
-          schemas = {
-            kubernetes = "*.yaml",
-            ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*",
-            ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
-            ["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/**/*.{yml,yaml}",
-            ["http://json.schemastore.org/prettierrc"] = ".prettierrc.{yml,yaml}",
-            ["http://json.schemastore.org/kustomization"] = "kustomization.{yml,yaml}",
-            ["http://json.schemastore.org/chart"] = "Chart.{yml,yaml}",
-            ["http://json.schemastore.org/circleciconfig"] = ".circleci/**/*.{yml,yaml}",
-          },
-        },
-      },
-    }
-
-    vim.lsp.config["lua_ls"] = {
-      capabilities = capabilities,
-      settings = {
-        Lua = {
-          -- make the language server recognize "vim" global
-          diagnostics = {
-            globals = { "vim" },
-          },
-          completion = {
-            callSnippet = "Replace",
-          },
-        },
-      },
-    }
-
-    -- Detect if running on NixOS
-    local is_nixos = vim.fn.filereadable("/etc/NIXOS") == 1
-
-    if is_nixos then
-      -- On NixOS, directly configure LSP servers from Nix packages
-      local servers = {
-        "lua_ls",
-        "pyright",
-        "gopls",
-        "yamlls",
-        "rust_analyzer",
-      }
-
-      for _, server in ipairs(servers) do
-        vim.lsp.enable(server)
-      end
-    else
-      -- On non-NixOS, use mason-lspconfig handlers
-      mason_lspconfig.setup({
-        handlers = {
-          -- Default handler for all servers
-          function(server_name)
-            lspconfig[server_name].setup({
-              capabilities = capabilities,
-            })
-          end,
-          -- Keep custom configurations for specific servers
-          ["yamlls"] = function()
-            lspconfig.yamlls.setup(vim.lsp.config.yamlls)
-          end,
-          ["lua_ls"] = function()
-            lspconfig.lua_ls.setup(vim.lsp.config.lua_ls)
-          end,
-        },
-      })
-    end
   end,
 }

@@ -1,16 +1,14 @@
--- local selected_theme = os.getenv("NVIM_THEME") or "tokyonight"
+local theme = vim.g.nvim_theme or "tokyonight"
+local is_active = vim.startswith(theme, "gruvbox")
 
 return {
   "sainnhe/gruvbox-material",
-  lazy = selected_theme ~= "gruvbox-material",
+  lazy = not is_active,
   priority = 1000,
   config = function()
-    -- Configuration must be set before colorscheme
-    vim.g.gruvbox_material_background = "medium" -- hard, medium, soft
-    vim.g.gruvbox_material_foreground = "material" -- material, mix, original
-    vim.g.gruvbox_material_enable_italic = true
-    vim.g.gruvbox_material_enable_bold = true
-    vim.g.gruvbox_material_transparent_background = 0
+    local style = theme:match("gruvbox%-material%-(.+)") or "medium"
+    vim.g.gruvbox_material_background = style
     vim.g.gruvbox_material_better_performance = 1
+    vim.cmd("colorscheme gruvbox-material")
   end,
 }

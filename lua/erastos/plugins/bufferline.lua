@@ -1,11 +1,21 @@
 return {
- "akinsho/bufferline.nvim",
-  dependencies = { "nvim-tree/nvim-web-devicons" },
+  "akinsho/bufferline.nvim",
   version = "*",
+  dependencies = { "nvim-tree/nvim-web-devicons" },
+  event = "VeryLazy",
   opts = {
     options = {
-      mode = "tabs",
-      seperator_style = "slant"
+      mode = "buffers",
+      diagnostics = "nvim_lsp",
+      always_show_bufferline = false,
+      offsets = {
+        {
+          filetype = "oil",
+          text = "File Explorer",
+          highlight = "Directory",
+          text_align = "left",
+        },
+      },
     },
   },
 }

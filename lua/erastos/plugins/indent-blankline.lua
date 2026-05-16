@@ -1,8 +1,15 @@
 return {
   "lukas-reineke/indent-blankline.nvim",
-  event = { "BufReadPre", "BufNewFile" },
   main = "ibl",
+  event = { "BufReadPost", "BufNewFile" },
   opts = {
-    indent = { char = "┊" },
+    indent = { char = "│" },
+    scope = { enabled = true },
+    exclude = {
+      filetypes = {
+        "help", "dashboard", "lazy", "mason", "oil",
+        "trouble", "toggleterm", "TelescopePrompt",
+      },
+    },
   },
 }

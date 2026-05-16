@@ -1,25 +1,14 @@
--- local selected_theme = os.getenv("NVIM_THEME") or "tokyonight"
+local theme = vim.g.nvim_theme or "tokyonight"
+local is_active = vim.startswith(theme, "catppuccin")
 
 return {
   "catppuccin/nvim",
   name = "catppuccin",
-  lazy = selected_theme ~= "catappuccin",
+  lazy = not is_active,
   priority = 1000,
-  opts = {
-    flavour = "mocha", -- latte, frappe, macchiato, mocha
-    transparent_background = false,
-    integrations = {
-      cmp = true,
-      gitsigns = true,
-      nvimtree = true,
-      treesitter = true,
-      telescope = true,
-      which_key = true,
-      mason = true,
-      markdown = true,
-    },
-  },
-  config = function(_, opts)
-    require("catppuccin").setup(opts)
+  config = function()
+    local flavour = theme:match("catppuccin%-(.+)") or "mocha"
+    require("catppuccin").setup({ flavour = flavour })
+    vim.cmd("colorscheme catppuccin-" .. flavour)
   end,
 }
