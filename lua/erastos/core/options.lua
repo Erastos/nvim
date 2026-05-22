@@ -16,6 +16,7 @@ opt.tabstop = 2
 opt.shiftwidth = 2
 opt.expandtab = true
 opt.autoindent = true
+opt.smartindent = true
 
 -- Search
 opt.ignorecase = true
@@ -39,6 +40,7 @@ opt.splitbelow = true
 opt.backspace = "indent,eol,start"
 opt.clipboard = "unnamedplus"
 opt.undofile = true
+opt.shada = "!,'200,<50,s10,h"
 
 -- Performance
 opt.updatetime = 250
