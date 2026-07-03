@@ -20,6 +20,8 @@ map("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Current buffer in new tab"
 -- Buffer navigation
 map("n", "<S-h>", "<cmd>bprevious<CR>", { desc = "Prev buffer" })
 map("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next buffer" })
+map("n", "<leader>bp", "<cmd>bprevious<CR>", { desc = "Prev buffer" })
+map("n", "<leader>bn", "<cmd>bnext<CR>", { desc = "Next buffer" })
 
 -- Cursor centering when scrolling
 map("n", "<C-d>", "<C-d>zz")
