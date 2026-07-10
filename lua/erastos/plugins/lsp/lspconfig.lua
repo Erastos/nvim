@@ -64,7 +64,7 @@ return {
             ["https://json.schemastore.org/github-workflow.json"] = ".github/workflows/*",
             ["https://json.schemastore.org/prettierrc.json"] = ".prettierrc.{yml,yaml}",
             ["https://gitlab.com/gitlab-org/gitlab-foss/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] = ".gitlab-ci.yml",
-            ["https://gitlab.com/gitlab-org/gitlab-foss/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] = ".gitlab/*",
+            ["https://gitlab.com/gitlab-org/gitlab-foss/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] = ".gitlab/**/*.{yml,yaml}",
           },
         },
       },
