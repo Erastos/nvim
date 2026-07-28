@@ -16,7 +16,7 @@ return {
   end,
 
   keys = {
-    { "<leader>bd", "<cmd>Bdelete<CR>", desc = "Delete buffer (keep split)" },
-    { "<leader>bDr", "<cmd>BdeleteRight<CR>", desc = "Delete buffers to the right (keep split)" },
+    { "<leader>bdd", "<cmd>Bdelete<CR>", desc = "Delete buffer (keep split)" },
+    { "<leader>bdr", "<cmd>BdeleteRight<CR>", desc = "Delete buffers to the right (keep split)" },
   },
 }
