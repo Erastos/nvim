@@ -17,6 +17,9 @@ return {
       "javascript", "json", "jsonc", "lua", "markdown",
       "markdown_inline", "python", "regex", "rust", "terraform",
       "toml", "tsx", "typescript", "vim", "vimdoc", "yaml",
+      "dockerfile", "nix", "helm", "rust", "zsh", "c", "cpp", 
+      "csv", "diff", "gitignore", "jq", "java", "passwd", "perl", "php", "ruby",
+      "rego", "sql", "strace", "xml"
     }
     local installed = require("nvim-treesitter.config").get_installed("parsers")
     local installed_set = {}
